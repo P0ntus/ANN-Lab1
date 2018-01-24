@@ -2,44 +2,65 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import shuffle
 
-class MyClass:
+NUM_POINTS = 200
+
+# Class that represents a 2d input and what type it should be classified as
+class Point:
     def __init__(self, x, y, c):
         self.x = x
 	self.y = y
 	self.classification = c
 
+# Generate points with multivariate normal distribution
 meanA = [3, 3]
 meanB = [-3, -3]
 cov = [[1, 0], [-5, 10]]  # diagonal covariance
 points = []
 
-Class_A = np.random.multivariate_normal(meanA, cov, 100).T
-for x in range(0, 100):
-    points.append(MyClass(Class_A[0][x], Class_A[1][x], 1))
+Class_A = np.random.multivariate_normal(meanA, cov, NUM_POINTS/2).T
+for x in range(0, NUM_POINTS/2):
+    points.append(Point(Class_A[0][x], Class_A[1][x], 1))
 
-Class_B = np.random.multivariate_normal(meanB, cov, 100).T
-for x in range(0, 100):
-    points.append(MyClass(Class_B[0][x], Class_B[1][x], -1))
+Class_B = np.random.multivariate_normal(meanB, cov, NUM_POINTS/2).T
+for x in range(0, NUM_POINTS/2):
+    points.append(Point(Class_B[0][x], Class_B[1][x], -1))
 
 shuffle(points)
 
-
+# Initialize input output and target pattern based on earlier generated points
 input_pattern = []
 output_pattern = []
 target_pattern = []
-
 for point in points:
     input_pattern.append([point.x, point.y, 1])
     target_pattern.append(point.classification)
 
 input_pattern = np.transpose(input_pattern)
 
-#for x in range(0, 200):
- #   print(input_pattern[x][0], input_pattern[x][1], input_pattern[x][2], target_pattern[x])
+# Train network
+weight = []
+mu, sigma = 0, 0.1
+weight.append(np.random.normal(mu, sigma, 1)[0])
+weight.append(np.random.normal(mu, sigma, 1)[0])
+weight.append(np.random.normal(mu, sigma, 1)[0])
+learning_rate = 0.00001
+error = []
+for x in range(0, 1000):
+    output_pattern = np.dot(np.transpose(weight), input_pattern)
+    for y in range(0, 200):
+        if output_pattern[y] > 0:
+	    output_pattern[y] = 1
+	else:
+	    output_pattern[y] = -1
+    error = np.subtract(target_pattern, output_pattern)
+    weight += np.dot(learning_rate, np.dot(error, np.transpose(input_pattern)))
+    #print(np.sum(error))
 
+    
+# Plot the points
 positive = []
 negative = []
-for x in range(0, 200):
+for x in range(0, NUM_POINTS):
     if target_pattern[x] == 1:
 	positive.append([input_pattern[0][x], input_pattern[1][x]])
     else:
@@ -52,32 +73,9 @@ plt.plot(positive[0], positive[1], 'x')
 plt.plot(negative[0], negative[1], 'o')
 
 
-weight = []
-mu, sigma = 0, 0.1
-weight.append(np.random.normal(mu, sigma, 1))
-weight.append(np.random.normal(mu, sigma, 1))
-weight.append(np.random.normal(mu, sigma, 1))
-learning_rate = 0.001
-error = []
-for x in range(0, 25):
-    output_pattern = np.dot(np.transpose(weight), input_pattern)
-    for y in range(0, 200):
-        if output_pattern[0][y] > 0:
-	    output_pattern[0][y] = 1
-	else:
-	    output_pattern[0][y] = -1
-    error = np.subtract(target_pattern, output_pattern)
-    weight += np.dot(learning_rate, np.dot(error, np.transpose(input_pattern)))
-    print(np.sum(error))
-
-    
-
-w0 = weight[0]
-w1 = weight[1]
-w2 = weight[2]
-
-y1 = - (w0 / w1) * -15 - (w2 / w1)
-y2 = - (w0 / w1) * 15 - (w2 / w1)
+# Plot separating line
+y1 = - (weight[0] / weight[1]) * -15 - (weight[2] / weight[1])
+y2 = - (weight[0] / weight[1]) * 15 - (weight[2] / weight[1])
 
 plt.plot([-15, 15], [y1, y2])
 plt.axis('equal')

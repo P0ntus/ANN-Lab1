@@ -33,17 +33,25 @@ for point in points:
     input_pattern.append([point.x, point.y, 1])
     target_pattern.append(point.classification)
 
-np.transpose(input_pattern)
+input_pattern = np.transpose(input_pattern)
 
 #for x in range(0, 200):
  #   print(input_pattern[x][0], input_pattern[x][1], input_pattern[x][2], target_pattern[x])
 
+positive = []
+negative = []
 for x in range(0, 200):
-    print(input_pattern[x][0])
+    if target_pattern[x] == 1:
+	positive.append([input_pattern[0][x], input_pattern[1][x]])
+    else:
+	negative.append([input_pattern[0][x], input_pattern[1][x]])
+
+positive = np.transpose(positive)
+negative = np.transpose(negative)
 
 
-
-plt.plot(input_pattern[:2], input_pattern[:2], 'x')
+plt.plot(positive[0], positive[1], 'x')
+plt.plot(negative[0], negative[1], 'o')
 plt.axis('equal')
 plt.show()
 

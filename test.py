@@ -50,15 +50,38 @@ negative = np.transpose(negative)
 
 plt.plot(positive[0], positive[1], 'x')
 plt.plot(negative[0], negative[1], 'o')
-plt.axis('equal')
-plt.show()
+
 
 weight = []
 mu, sigma = 0, 0.1
 weight.append(np.random.normal(mu, sigma, 1))
 weight.append(np.random.normal(mu, sigma, 1))
 weight.append(np.random.normal(mu, sigma, 1))
+learning_rate = 0.001
+error = []
+for x in range(0, 25):
+    output_pattern = np.dot(np.transpose(weight), input_pattern)
+    for y in range(0, 200):
+        if output_pattern[0][y] > 0:
+	    output_pattern[0][y] = 1
+	else:
+	    output_pattern[0][y] = -1
+    error = np.subtract(target_pattern, output_pattern)
+    weight += np.dot(learning_rate, np.dot(error, np.transpose(input_pattern)))
+    print(np.sum(error))
 
+    
+
+w0 = weight[0]
+w1 = weight[1]
+w2 = weight[2]
+
+y1 = - (w0 / w1) * -15 - (w2 / w1)
+y2 = - (w0 / w1) * 15 - (w2 / w1)
+
+plt.plot([-15, 15], [y1, y2])
+plt.axis('equal')
+plt.show()
 
 
 

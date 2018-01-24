@@ -11,7 +11,6 @@ class MyClass:
 meanA = [3, 3]
 meanB = [-3, -3]
 cov = [[1, 0], [-5, 10]]  # diagonal covariance
-
 points = []
 
 Class_A = np.random.multivariate_normal(meanA, cov, 100).T
@@ -49,17 +48,17 @@ for x in range(0, 200):
 positive = np.transpose(positive)
 negative = np.transpose(negative)
 
-
 plt.plot(positive[0], positive[1], 'x')
 plt.plot(negative[0], negative[1], 'o')
 plt.axis('equal')
 plt.show()
 
-#plt.plot(x_a, y_a, 'x')
-#plt.plot(x_b, y_b, 'o')
-#plt.axis('equal')
-#plt.show()
-#print(x_a)
-#print(x_a[0][0])
+weight = []
+mu, sigma = 0, 0.1
+weight.append(np.random.normal(mu, sigma, 1))
+weight.append(np.random.normal(mu, sigma, 1))
+weight.append(np.random.normal(mu, sigma, 1))
+
+
 
 

@@ -11,21 +11,25 @@ class Point:
 	self.y = y
 	self.classification = c
 
+
 # Generate points with multivariate normal distribution
 meanA = [3, 3]
 meanB = [-3, -3]
 cov = [[1, 0], [-5, 10]]  # diagonal covariance
 points = []
 
+
 Class_A = np.random.multivariate_normal(meanA, cov, NUM_POINTS/2).T
 for x in range(0, NUM_POINTS/2):
     points.append(Point(Class_A[0][x], Class_A[1][x], 1))
+
 
 Class_B = np.random.multivariate_normal(meanB, cov, NUM_POINTS/2).T
 for x in range(0, NUM_POINTS/2):
     points.append(Point(Class_B[0][x], Class_B[1][x], -1))
 
 shuffle(points)
+
 
 # Initialize input output and target pattern based on earlier generated points
 input_pattern = []
@@ -37,7 +41,9 @@ for point in points:
 
 input_pattern = np.transpose(input_pattern)
 
-# Train network
+
+# Perceptron Learning
+'''
 weight = []
 mu, sigma = 0, 0.1
 weight.append(np.random.normal(mu, sigma, 1)[0])
@@ -55,8 +61,24 @@ for x in range(0, 1000):
     error = np.subtract(target_pattern, output_pattern)
     weight += np.dot(learning_rate, np.dot(error, np.transpose(input_pattern)))
     #print(np.sum(error))
+'''
 
+
+# Delta Learning
+weight = []
+mu, sigma = 0, 0.1
+weight.append(np.random.normal(mu, sigma, 1)[0])
+weight.append(np.random.normal(mu, sigma, 1)[0])
+weight.append(np.random.normal(mu, sigma, 1)[0])
+learning_rate = 0.00001
+error = []
+for x in range(0, 1000):
+    output_pattern = np.dot(np.transpose(weight), input_pattern)
+    error = np.subtract(target_pattern, output_pattern)
+    weight += np.dot(learning_rate, np.dot(error, np.transpose(input_pattern)))
+    print(np.sum(error))
     
+
 # Plot the points
 positive = []
 negative = []

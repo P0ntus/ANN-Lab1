@@ -5,8 +5,19 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from random import shuffle
+import argparse
+import sys
 
 from sklearn.neural_network import MLPRegressor
+
+parser = argparse.ArgumentParser(description='MLP network for Mackey-Glass time series predictions.')
+parser.add_argument('-n', '--hidden-nodes', type=int, nargs='+', default=5,
+                   help='number of nodes in the hidden layers (max 8 per layer)')
+parser.add_argument('-l', '--learning-rate', type=float, default=0.001,
+                   help='the learning rate, controls how fast it converges')
+parser.add_argument('-a', '--alpha', type=float, default=0.0001,
+                   help='the L2 regularization factor')
+args = parser.parse_args()
 
 np.set_printoptions(threshold=np.nan) #Always print the whole matrix
 
@@ -56,7 +67,8 @@ input_size = 5
 output_size = 1
 hidden_layer_size = 15
 
-reg = MLPRegressor(hidden_layer_sizes=hidden_layer_size)
+reg = MLPRegressor(hidden_layer_sizes=args.hidden_nodes, early_stopping=True, max_iter=10000,
+                   learning_rate_init=args.learning_rate, alpha=args.alpha)
 reg = reg.fit(np.transpose(input_pattern), target_pattern)
 output = reg.predict(np.transpose(input_pattern))
 

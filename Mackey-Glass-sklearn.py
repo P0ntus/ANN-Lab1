@@ -15,9 +15,8 @@ OFFSET = 300
 NUM_POINTS = POINTS_TO_GEN - OFFSET
 learning_rate = 0.0001
 
-TRAINING_SIZE = 800
-VALIDATION_SIZE = 200
-TEST_SIZE = 200
+TRAINING_SIZE = 1000
+TEST_SIZE = NUM_POINTS - TRAINING_SIZE
 
 def MGE(t, x):
 	return x[t] + ((0.2 * x[t-25]) / (1 + x[t-25]**10)) - 0.1 * x[t]
@@ -40,6 +39,13 @@ for t in range(OFFSET+50, POINTS_TO_GEN + 50):
 	input_pattern.append([prev_x[t-25], prev_x[t-20], prev_x[t-15], prev_x[t-10], prev_x[t-5]])
 	target_pattern.append(prev_x[t])
 
+# Split into training and test set
+training_target_pattern = target_pattern[0:TRAINING_SIZE]
+test_target_pattern = target_pattern[TRAINING_SIZE:NUM_POINTS]
+
+training_input_pattern = input_pattern[0:TRAINING_SIZE]
+test_input_pattern = input_pattern[TRAINING_SIZE:NUM_POINTS]
+
 input_pattern = np.array(input_pattern)
 #print(len(target_pattern))
 #input_pattern = (input_pattern - input_pattern.mean(axis=0))/input_pattern.var(axis=0)
@@ -60,11 +66,12 @@ reg = MLPRegressor(hidden_layer_sizes=hidden_layer_size)
 reg = reg.fit(np.transpose(input_pattern), target_pattern)
 output = reg.predict(np.transpose(input_pattern))
 
+'''
 plt.plot(output)
 plt.plot(target_pattern)
 plt.legend(['y = ANN', 'y = TARGET'])
 plt.ylabel('some numbers')
 plt.show()
-
+'''
 
 

@@ -26,9 +26,8 @@ OFFSET = 300
 NUM_POINTS = POINTS_TO_GEN - OFFSET
 learning_rate = 0.0001
 
-TRAINING_SIZE = 800
-VALIDATION_SIZE = 200
-TEST_SIZE = 200
+TRAINING_SIZE = 1000
+TEST_SIZE = NUM_POINTS - TRAINING_SIZE
 
 def MGE(t, x):
 	return x[t] + ((0.2 * x[t-25]) / (1 + x[t-25]**10)) - 0.1 * x[t]
@@ -51,12 +50,24 @@ for t in range(OFFSET+50, POINTS_TO_GEN + 50):
 	input_pattern.append([prev_x[t-25], prev_x[t-20], prev_x[t-15], prev_x[t-10], prev_x[t-5]])
 	target_pattern.append(prev_x[t])
 
-input_pattern = np.array(input_pattern)
-#print(len(target_pattern))
+# Split into training and test set
+training_input_pattern = input_pattern[0:TRAINING_SIZE]
+test_input_pattern = input_pattern[TRAINING_SIZE:NUM_POINTS]
+
+training_target_pattern = target_pattern[0:TRAINING_SIZE]
+test_target_pattern = target_pattern[TRAINING_SIZE:NUM_POINTS]
+
+training_input_pattern = np.array(training_input_pattern)
+test_input_pattern = np.array(test_input_pattern)
+
 #input_pattern = (input_pattern - input_pattern.mean(axis=0))/input_pattern.var(axis=0)
-input_pattern = np.transpose(input_pattern)
-target_pattern = np.array(target_pattern)
-target_pattern = (target_pattern - target_pattern.mean(axis=0))/target_pattern.std(axis=0) / 2.5
+training_input_pattern = np.transpose(training_input_pattern)
+test_input_pattern = np.transpose(test_input_pattern)
+
+training_target_pattern = np.array(training_target_pattern)
+training_target_pattern = (training_target_pattern - training_target_pattern.mean(axis=0))/training_target_pattern.std(axis=0) / 2.5
+test_target_pattern = np.array(test_target_pattern)
+test_target_pattern = (test_target_pattern - test_target_pattern.mean(axis=0))/test_target_pattern.std(axis=0) / 2.5
 
 #for t in range(0, 5):
 	#input_pattern[t] = normalize(input_pattern[t])
@@ -69,14 +80,14 @@ hidden_layer_size = 15
 
 reg = MLPRegressor(hidden_layer_sizes=args.hidden_nodes, early_stopping=True, max_iter=10000,
                    learning_rate_init=args.learning_rate, alpha=args.alpha)
-reg = reg.fit(np.transpose(input_pattern), target_pattern)
-output = reg.predict(np.transpose(input_pattern))
+reg = reg.fit(np.transpose(training_input_pattern), training_target_pattern)
+output = reg.predict(np.transpose(training_input_pattern))
+
 
 plt.plot(output)
-plt.plot(target_pattern)
+plt.plot(training_target_pattern)
 plt.legend(['y = ANN', 'y = TARGET'])
 plt.ylabel('some numbers')
 plt.show()
-
 
 

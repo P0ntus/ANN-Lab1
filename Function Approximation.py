@@ -32,19 +32,6 @@ def phi( h_input ):
 # Mean squared error
 def mse( expected, predicted ):
 	return np.sum((expected - predicted) ** 2)/len(expected)
-	'''
-	result = 0
-	for i in range(0, 3):
-		result += (expected[i] - predicted[i]) ** 2
-		print((expected[i] - predicted[i]) ** 2)
-	print(result)
-	result = result/len(expected)
-	print(result)
-	print(((expected - predicted) ** 2))
-		#error = np.subtract(target_pattern, o_output)
-	#print(np.sum(error))
-	print(np.sum((expected - predicted) ** 2)/len(expected))
-	'''
 
 # Get random unique sequence
 def random_sequence( N, R ):

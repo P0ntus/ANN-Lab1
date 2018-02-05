@@ -13,6 +13,13 @@ class Point:
         self.y = y
         self.classification = c
 
+# Check amount of correct classifications
+def correct_classifications( output, target ):
+	correct_classifications = 0
+	for i in range(0, len(output)):
+    		if(output[i] == target[i]):
+			correct_classifications += 1
+	return correct_classifications
 
 # Generate points with multivariate normal distribution
 
@@ -89,7 +96,8 @@ def normalize( v ):
    result = 0
    for x in v :
       result = result + x*x
-      result = math.sqrt( result )
+
+   result = math.sqrt( result )
 
    for x in range(0, len(v)):
       v[x] = v[x] / result
@@ -102,7 +110,7 @@ for x in range(0, 100):
 		output_pattern = np.dot(weight, np.transpose(pat)[y])
 		error = target_pattern[y] - output_pattern
 		weight += learning_rate * error * np.transpose(pat)[y]
-	print(error)
+	#print(error)
 	
 '''
 # Batch
@@ -171,7 +179,7 @@ for x in range(0, 1000):
 	error = np.subtract(target_pattern, o_output)
 	print(np.sum(error))
 '''
-
+'''
 # Plot the points
 positive = []
 negative = []
@@ -194,7 +202,7 @@ y2 = - (weight[0] / weight[1]) * 5 - (weight[2] / weight[1])
 plt.plot([-5, 5], [y1, y2])
 plt.axis('equal')
 plt.show()
-
+'''
 
 
 

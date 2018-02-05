@@ -13,6 +13,10 @@ class Point:
         self.y = y
         self.classification = c
 
+# Mean squared error
+def mse( expected, predicted ):
+	return np.sum((expected - predicted) ** 2)/len(expected)
+
 # Check amount of correct classifications
 def correct_classifications( output, target ):
 	correct_classifications = 0
@@ -105,23 +109,33 @@ def normalize( v ):
 
 # Delta Learning
 # Sequential
+'''
 for x in range(0, 100):
 	for y in range(0, NUM_POINTS):
 		output_pattern = np.dot(weight, np.transpose(pat)[y])
 		error = target_pattern[y] - output_pattern
 		weight += learning_rate * error * np.transpose(pat)[y]
 	#print(error)
-	
 '''
+	
 # Batch
-error = []
-for x in range(0, 100):
+error = [1]
+previous_error = [2]
+mean_squared_error = 1
+previous_squared_error = 2
+learning_curve = []
+classification_curve = []
+while (abs(mean_squared_error - previous_squared_error) > 0.0001):
+	previous_squared_error = mean_squared_error
 	output_pattern = np.dot(np.transpose(weight), pat)
 	error = np.subtract(target_pattern, output_pattern)
+	classification_curve.append(np.sum(error))
+	mean_squared_error = mse(target_pattern, output_pattern)
+	learning_curve.append(mean_squared_error)
 	weight += np.dot(learning_rate, np.dot(error, np.transpose(pat)))
-	print(np.sum(error))
 	#normalize(weight)
-'''
+	print(mean_squared_error)
+	
 
 '''
 def phi( h_input ):
@@ -203,6 +217,10 @@ plt.plot([-5, 5], [y1, y2])
 plt.axis('equal')
 plt.show()
 '''
+plt.plot(learning_curve)
+plt.show()
+
+
 
 
 

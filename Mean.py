@@ -8,10 +8,10 @@ learning_rate = 0.0001
 
 # Class that represents a 2d input and what type it should be classified as
 class Point:
-    def __init__(self, x, y, c):
-        self.x = x
-        self.y = y
-        self.classification = c
+	def __init__(self, x, y, c):
+		self.x = x
+		self.y = y
+		self.classification = c
 
 # Mean squared error
 def mse( expected, predicted ):
@@ -21,7 +21,7 @@ def mse( expected, predicted ):
 def incorrect_classifications( output, target ):
 	incorrect_classifications = 0
 	for i in range(0, len(output)):
-    		if(output[i] != target[i]):
+		if(output[i] != target[i]):
 			incorrect_classifications += 1
 	return incorrect_classifications
 
@@ -175,7 +175,7 @@ for t in range(0, 100):
 		#print(error)
 	'''
 
-	'''	
+	'''     
 	# Batch
 	for x in range(0, 20):
 		output_pattern = np.dot(np.transpose(weight), pat)
@@ -225,32 +225,45 @@ for t in range(0, 100):
 
 	pat = np.append(input_pattern, [[1] * NUM_POINTS], 0)
 
+	batch_size = NUM_POINTS
+	# batch_size = NUM_POINTS # BATCH
+	# batch_size = 1 # SEQUENTIAL
+	# batch_size = NUM_POINTS // x # MINIBATCH
 	for x in range(0, 200):
-		# Forward pass
-		h_input = np.dot(v, np.append(input_pattern, [[1] * NUM_POINTS], 0))
-		h_output = np.append(phi( h_input ), [[1] * NUM_POINTS], 0)
-		o_input = np.dot(w, h_output)
-		o_output = phi( o_input )
+		total_output = np.array([])
+		for i in range (0, math.ceil(NUM_POINTS / batch_size)):
+			batch_input = np.array(input_pattern)[:, i * batch_size : (i * batch_size) + batch_size]
+			batch_target = target_pattern[i * batch_size : (i * batch_size) + batch_size]
+			batch_pat = np.append(batch_input, [[1] * batch_size], 0)
+			# Forward pass
+			h_input = np.dot(v, np.append(batch_input, [[1] * batch_size], 0))
+			h_output = np.append(phi( h_input ), [[1] * batch_size], 0)
+			o_input = np.dot(w, h_output)
+			o_output = phi( o_input )
+			total_output = np.append(total_output, o_output)
 
-		# Backward pass
-		delta_o = (o_output - np.asarray(target_pattern)) * ((1 + o_output) * (1 - o_output)) * 0.5
-		delta_h = (np.dot(np.transpose(w), delta_o)) * ((1 + h_output) * (1 - h_output)) * 0.5
-		delta_h = np.delete(delta_h, -1, 0)
-	
-		# Weight update
-		dv = (dv * alpha) - (np.dot(delta_h, np.transpose(pat))) * (1 - alpha)
-		dw = (dw * alpha) - (np.dot(delta_o, np.transpose(h_output))) * (1 - alpha)
-		v = v + dv * learning_rate
-		w = w + dw * learning_rate
+			# Backward pass
+			delta_o = (o_output - np.asarray(batch_target)) * ((1 + o_output) * (1 - o_output)) * 0.5
+			delta_h = (np.dot(np.transpose(w), delta_o)) * ((1 + h_output) * (1 - h_output)) * 0.5
+			delta_h = np.delete(delta_h, -1, 0)
+		
+			# Weight update
+			dv = (dv * alpha) - (np.dot(delta_h, np.transpose(batch_pat))) * (1 - alpha)
+			dw = (dw * alpha) - (np.dot(delta_o, np.transpose(h_output))) * (1 - alpha)
+			v = v + dv * learning_rate
+			w = w + dw * learning_rate
 
-		mean_squared_error = mse(np.array(target_pattern), np.array(o_output))
+		#print(o_output)
+		#print(np.array(total_output).shape)
+		#print(total_output)
+		mean_squared_error = mse(np.array(target_pattern), total_output)
 		learning_curve.append(mean_squared_error)
 		for y in range(0, NUM_POINTS):
-			if o_output[0][y] > 0:
-				o_output[0][y] = 1
+			if total_output[y] > 0:
+				total_output[y] = 1
 			else:
-				o_output[0][y] = -1
-		classification_curve.append(incorrect_classifications(o_output[0], target_pattern))
+				total_output[y] = -1
+		classification_curve.append(incorrect_classifications(total_output, target_pattern))
 
 
 		# error = np.subtract(target_pattern, o_output)

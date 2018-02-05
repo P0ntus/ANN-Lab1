@@ -64,14 +64,11 @@ for x in range(0, 1000000):
     w = w + dw * learning_rate
 
     error = np.sum(np.subtract(data, o_output) ** 2) / len(data)
-    print(error, end='\r')
+    print("MSE: " + str(error), end='\r')
     #print(error)
-    if abs(error - prev_error) < 0.000001:
+    if abs(error - prev_error) < 0.000001 and np.array_equal(data, np.around(o_output)):
         print("Converged at error: " + str(error))
-        print("Output (rounded):")
-        print(np.around(o_output))
-        print("Weights:")
-        print(w)
-        print(v)
+        print("Hidden layer weights:")
+        print(np.transpose(np.sign(v)))
         break
     prev_error = error

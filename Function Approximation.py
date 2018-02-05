@@ -43,10 +43,6 @@ def random_sequence( N, R ):
 		seq.append(rand)
 	return seq
 
-a = np.array([1, 2, 3])
-b = np.array([1.11, 1.952, 3.5112])
-mse(a, b)
-
 input_size = 2
 output_size = 1
 hidden_layer_size = 25
@@ -86,7 +82,7 @@ for i in range(0, training_size):
 #print(np.transpose(training_input))
 training_input = np.transpose(training_input)
 #print(training_target)
-print(input_pattern)
+#print(input_pattern)
 #print(target_pattern)
 	
 pat = np.append(training_input, [[1] * training_size], 0)
@@ -123,7 +119,7 @@ zz = np.reshape(o_output, (len(x), len(y)))
 # Plot generated values
 fig = plt.figure()
 ax = fig.gca(projection='3d')
-surf = ax.plot_surface(xx, yy, zz, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+surf = ax.plot_surface(xx, yy, zz, cmap=cm.coolwarm, cstride = 1, rstride = 1, linewidth=0, antialiased=False)
 
 # Customize the z axis.
 ax.set_zlim(-1.01, 1.01)

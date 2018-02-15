@@ -55,18 +55,16 @@ target_pattern = []
 error_pattern = []
 
 
-for t in range(50, POINTS_TO_GEN + 50):
+for t in range(OFFSET+50, POINTS_TO_GEN + 50):
 	input_pattern.append([prev_x[t-25], prev_x[t-20], prev_x[t-15], prev_x[t-10], prev_x[t-5]])
 	target_pattern.append(prev_x[t])
 
 # Split into training and test set
 training_input_pattern = input_pattern[0:TRAINING_SIZE]
-test_input_pattern = input_pattern[NUM_POINTS:]
-
-print( test_input_pattern )
+test_input_pattern = input_pattern[TRAINING_SIZE:NUM_POINTS]
 
 training_target_pattern = target_pattern[0:TRAINING_SIZE]
-test_target_pattern = target_pattern[NUM_POINTS:]
+test_target_pattern = target_pattern[TRAINING_SIZE:NUM_POINTS]
 
 training_input_pattern = np.array(training_input_pattern)
 test_input_pattern = np.array(test_input_pattern)
@@ -89,18 +87,21 @@ input_size = 5
 output_size = 1
 hidden_layer_size = 15
 
-reg = MLPRegressor(hidden_layer_sizes=args.hidden_nodes, early_stopping=True, max_iter=10000,
-                   learning_rate_init=args.learning_rate, alpha=args.alpha)
-reg = reg.fit(np.transpose(training_input_pattern), training_target_pattern)
-output = reg.predict(np.transpose(test_input_pattern))
+#We want to plot error estimation functions to alpha L2 parameter
 
-error_pattern = test_target_pattern - output
+for i in range(0, 100) :
 
-plt.plot(output)
-plt.plot(test_target_pattern)
+	reg = MLPRegressor(hidden_layer_sizes=args.hidden_nodes, early_stopping=True, max_iter=10000,
+		           learning_rate_init=args.learning_rate, alpha= 10**(-i) ) #Alpha to the power of i is changed here
+	reg = reg.fit(np.transpose(training_input_pattern), training_target_pattern)
+	output = reg.predict(np.transpose(test_input_pattern))
+	error_pattern.append( MeanSquareError(output, test_target_pattern) )
+	print( 10**(-i) )
+
+
 plt.plot(error_pattern)
-plt.legend(['y = ANN', 'y = TARGET', 'y=ERROR'])
-plt.ylabel('some numbers')
+plt.legend(['y=ERROR_alpha'])
+plt.xlabel('alpha')
 plt.show()
 
 

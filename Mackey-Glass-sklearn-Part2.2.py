@@ -29,6 +29,10 @@ learning_rate = 0.0001
 TRAINING_SIZE = 1000
 TEST_SIZE = NUM_POINTS - TRAINING_SIZE
 
+#Noise settings
+LOC = 0
+SCALE = 0.03
+
 def MGE(t, x):
 	return x[t] + ((0.2 * x[t-25]) / (1 + x[t-25]**10)) - 0.1 * x[t]
 
@@ -37,6 +41,13 @@ def MeanSquareError(x,y):
 	for i in range( 0, len(x) ) :
 		error += (x[i] - y[i])**2
 	return math.sqrt(error)
+
+def AddNoise(x):
+	y = np.array( np.random.normal(LOC, SCALE, len(x) ).T )
+	print (y)
+	print (x)
+	return x + y
+		
 
 prev_x = []
 # Add 25 zero values so that prev_x[t] will return 0 if t is lower than 0
@@ -49,6 +60,9 @@ prev_x.append(x)
 for t in range(25, POINTS_TO_GEN + 50):
 	prev_x.append(MGE(t, prev_x))
 
+#We add noise in the two sets
+prev_x = AddNoise(prev_x)
+
 # Calculate input values for the ANN
 input_pattern = []
 target_pattern = []
@@ -59,14 +73,15 @@ for t in range(50, POINTS_TO_GEN + 50):
 	input_pattern.append([prev_x[t-25], prev_x[t-20], prev_x[t-15], prev_x[t-10], prev_x[t-5]])
 	target_pattern.append(prev_x[t])
 
+
 # Split into training and test set
 training_input_pattern = input_pattern[0:TRAINING_SIZE]
-test_input_pattern = input_pattern[NUM_POINTS:]
+test_input_pattern = input_pattern[TRAINING_SIZE:NUM_POINTS]
 
 print( test_input_pattern )
 
 training_target_pattern = target_pattern[0:TRAINING_SIZE]
-test_target_pattern = target_pattern[NUM_POINTS:]
+test_target_pattern = target_pattern[TRAINING_SIZE:NUM_POINTS]
 
 training_input_pattern = np.array(training_input_pattern)
 test_input_pattern = np.array(test_input_pattern)
